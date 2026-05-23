@@ -3,14 +3,13 @@
 
 const CACHE_NAME = 'julapp-v1';
 
-// Fichiers à mettre en cache au démarrage (shell de l'app)
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/apple-touch-icon.png',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  '/Jul-App/',
+  '/Jul-App/index.html',
+  '/Jul-App/manifest.json',
+  '/Jul-App/icons/apple-touch-icon.png',
+  '/Jul-App/icons/icon-192.png',
+  '/Jul-App/icons/icon-512.png',
 ];
 
 // ── Installation : mise en cache du shell ──────────────────────────────────
@@ -20,7 +19,6 @@ self.addEventListener('install', (event) => {
       return cache.addAll(PRECACHE_ASSETS);
     })
   );
-  // Active immédiatement sans attendre la fermeture des onglets
   self.skipWaiting();
 });
 
@@ -35,13 +33,11 @@ self.addEventListener('activate', (event) => {
       )
     )
   );
-  // Prend le contrôle de tous les onglets ouverts immédiatement
   self.clients.claim();
 });
 
 // ── Fetch : cache-first avec fallback réseau ──────────────────────────────
 self.addEventListener('fetch', (event) => {
-  // On ignore les requêtes non-GET et les extensions Chrome
   if (event.request.method !== 'GET') return;
   if (event.request.url.startsWith('chrome-extension://')) return;
 
@@ -51,7 +47,6 @@ self.addEventListener('fetch', (event) => {
 
       return fetch(event.request)
         .then((response) => {
-          // Ne cache que les réponses valides
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
@@ -62,9 +57,8 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // Fallback hors-ligne : retourne index.html pour les navigations
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match('/Jul-App/index.html');
           }
         });
     })
